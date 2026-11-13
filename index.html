@@ -1,0 +1,618 @@
+```html
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Break Steal & Egg Income & Pickaxe Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        roblox: {
+                            dark: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#38bdf8',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            green: '#22c55e',
+                            yellow: '#eab308'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #09090b 100%);
+            min-height: 100vh;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+        }
+        .glow-card {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="text-slate-100 antialiased flex flex-col min-h-screen">
+
+    <!-- Header Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/70 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <i class="fa-solid fa-gamepad text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base sm:text-xl bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">
+                        Break Steal & Egg Calc
+                    </h1>
+                    <p class="text-xs text-slate-400">Roblox Simulator (K to SX)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="resetCalculator()" class="px-3.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition border border-slate-700 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Grid Layout: Income Settings & Presets (Left) & Results Matrix (Right) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Income Input & Multipliers (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Income Input Card -->
+                <div class="glow-card bg-slate-900/80 rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <h2 class="text-lg font-bold flex items-center gap-2 mb-4 text-cyan-400">
+                        <i class="fa-solid fa-coins"></i> Pendapatan Per Detik
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Nilai Dasar (Angka)</label>
+                            <input type="number" id="baseValue" value="1.5" step="any" min="0" oninput="calculateAll()" 
+                                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3.5 text-xl font-bold text-white focus:outline-none focus:border-cyan-500 transition shadow-inner">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Satuan / Suffix (K - SX)</label>
+                            <select id="suffixSelector" onchange="calculateAll()" 
+                                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-cyan-300 focus:outline-none focus:border-cyan-500 transition cursor-pointer">
+                                <option value="1">Satuan (Tanpa Suffix)</option>
+                                <option value="1e3" selected>K (Thousand / Ribu)</option>
+                                <option value="1e6">M (Million / Juta)</option>
+                                <option value="1e9">B (Billion / Miliar)</option>
+                                <option value="1e12">T (Trillion / Triliun)</option>
+                                <option value="1e15">Qa (Quadrillion)</option>
+                                <option value="1e18">Qi (Quintillion)</option>
+                                <option value="1e21">Sx (Sextillion)</option>
+                            </select>
+                        </div>
+
+                        <!-- Quick Tier Select Buttons -->
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Preset Cepat Satuan</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="setSuffix('1e3')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">K</button>
+                                <button onclick="setSuffix('1e6')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">M</button>
+                                <button onclick="setSuffix('1e9')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">B</button>
+                                <button onclick="setSuffix('1e12')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">T</button>
+                                <button onclick="setSuffix('1e15')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">Qa</button>
+                                <button onclick="setSuffix('1e18')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">Qi</button>
+                                <button onclick="setSuffix('1e21')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 transition">Sx</button>
+                                <button onclick="setSuffix('1')" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">1</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multiplier & Boost Card -->
+                <div class="glow-card bg-slate-900/80 rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <h2 class="text-lg font-bold flex items-center gap-2 mb-4 text-purple-400">
+                        <i class="fa-solid fa-bolt"></i> Multiplier & Boost Game
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1.5">
+                                <label class="text-xs font-medium text-slate-400">Total Multiplier (x)</label>
+                                <span id="multDisplay" class="text-xs font-bold text-purple-400 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800/50">2.0x</span>
+                            </div>
+                            <input type="range" id="multiplierSlider" min="1" max="100" step="0.5" value="2" oninput="updateMultiplierFromSlider()" 
+                                class="w-full accent-purple-500 bg-slate-950 rounded-lg h-2 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Atau Masukkan Manual Multiplier</label>
+                            <input type="number" id="multiplierInput" value="2" step="any" min="1" oninput="updateMultiplierFromInput()" 
+                                class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:border-purple-500 transition">
+                        </div>
+
+                        <!-- Quick Boost Buttons -->
+                        <div class="pt-2 border-t border-slate-800">
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Preset Boost Event / Pet</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="setMultiplier(1)" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition">Normal</button>
+                                <button onclick="setMultiplier(2)" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition">2x VIP</button>
+                                <button onclick="setMultiplier(5)" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition">5x Event</button>
+                                <button onclick="setMultiplier(10)" class="py-1.5 px-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition">10x Max</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Results & Breakdown Matrix (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Main Live Ticker Banner -->
+                <div class="glow-card bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 rounded-2xl p-6 border border-cyan-500/30 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-2">
+                                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> Estimasi Income Aktif
+                            </span>
+                            <h2 class="text-sm text-slate-400">Total Income Per Detik (Disesuaikan Multiplier)</h2>
+                        </div>
+                        <div class="text-right sm:text-left">
+                            <span id="effectivePerSec" class="text-2xl sm:text-3xl font-extrabold text-cyan-300 tracking-tight">0</span>
+                            <span class="text-xs text-slate-400 block">/ detik</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income Breakdown Cards Matrix -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    
+                    <!-- Per Menit -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-clock text-cyan-400"></i> Per Menit (60 Detik)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x60</span>
+                        </div>
+                        <div id="resMinute" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                    <!-- Per Jam -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-hourglass-half text-purple-400"></i> Per Jam (3,600 Detik)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x3.6K</span>
+                        </div>
+                        <div id="resHour" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                    <!-- Per Hari -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-pink-400"></i> Per Hari (24 Jam)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x86.4K</span>
+                        </div>
+                        <div id="resDay" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                    <!-- Per Minggu -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-week text-yellow-400"></i> Per Minggu (7 Hari)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x604.8K</span>
+                        </div>
+                        <div id="resWeek" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                    <!-- Per Bulan -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-green-400"></i> Per Bulan (30 Hari)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x2.59M</span>
+                        </div>
+                        <div id="resMonth" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                    <!-- Per Tahun -->
+                    <div class="glow-card bg-slate-900/70 rounded-xl p-5 border border-slate-800 hover:border-slate-700 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-400 flex items-center gap-2">
+                                <i class="fa-solid fa-star text-cyan-400"></i> Per Tahun (365 Hari)
+                            </span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">x31.5M</span>
+                        </div>
+                        <div id="resYear" class="text-xl sm:text-2xl font-bold text-white truncate" title="0">0</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Pickaxe Target / Goal Calculator Section (K to SX Support) -->
+        <div class="glow-card bg-slate-900/80 rounded-2xl p-6 sm:p-8 border border-purple-500/30 relative overflow-hidden">
+            <div class="absolute -left-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30 text-white">
+                    <i class="fa-solid fa-hammer text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-purple-300">Pickaxe Target / Goal Calculator (K s.d SX)</h2>
+                    <p class="text-xs text-slate-400">Pilih tier pickaxe instan atau masukkan custom harga dari K hingga Sextillion (SX)</p>
+                </div>
+            </div>
+
+            <!-- Preset Pickaxe Tier Selector -->
+            <div class="mb-6">
+                <label class="block text-xs font-medium text-slate-400 mb-2">Pilih Cepat Tier Pickaxe Game (K - SX)</label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
+                    <button onclick="setPickaxeTier(50, '1e3', 'Bronze Pickaxe (50K)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="50K">
+                        50K <span class="block text-[10px] text-slate-400 font-normal">Bronze</span>
+                    </button>
+                    <button onclick="setPickaxeTier(500, '1e3', 'Silver Pickaxe (500K)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="500K">
+                        500K <span class="block text-[10px] text-slate-400 font-normal">Silver</span>
+                    </button>
+                    <button onclick="setPickaxeTier(10, '1e6', 'Gold Pickaxe (10M)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="10M">
+                        10M <span class="block text-[10px] text-slate-400 font-normal">Gold</span>
+                    </button>
+                    <button onclick="setPickaxeTier(500, '1e6', 'Diamond Pickaxe (500M)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="500M">
+                        500M <span class="block text-[10px] text-slate-400 font-normal">Diamond</span>
+                    </button>
+                    <button onclick="setPickaxeTier(50, '1e9', 'Ruby Pickaxe (50B)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="50B">
+                        50B <span class="block text-[10px] text-slate-400 font-normal">Ruby</span>
+                    </button>
+                    <button onclick="setPickaxeTier(10, '1e12', 'Plasma Pickaxe (10T)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="10T">
+                        10T <span class="block text-[10px] text-slate-400 font-normal">Plasma</span>
+                    </button>
+                    <button onclick="setPickaxeTier(1, '1e15', 'Galaxy Pickaxe (1Qa)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="1Qa">
+                        1 Qa <span class="block text-[10px] text-slate-400 font-normal">Galaxy</span>
+                    </button>
+                    <button onclick="setPickaxeTier(100, '1e18', 'Godly SX Pickaxe (100Qi)')" class="py-2 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-purple-950 hover:text-purple-300 border border-slate-700 transition text-center truncate" title="100Qi">
+                        100 Qi <span class="block text-[10px] text-slate-400 font-normal">Godly</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Target Inputs (K to SX) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                
+                <!-- Target Value Input -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Harga Target Pickaxe (Angka)</label>
+                    <input type="number" id="targetBaseValue" value="50" step="any" min="0" oninput="calculateAll()" 
+                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-white focus:outline-none focus:border-purple-500 transition">
+                </div>
+
+                <!-- Target Suffix Selector (K to SX) -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Satuan Target (K s.d SX)</label>
+                    <select id="targetSuffixSelector" onchange="calculateAll()" 
+                        class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm font-semibold text-purple-300 focus:outline-none focus:border-purple-500 transition cursor-pointer">
+                        <option value="1">Satuan (Tanpa Suffix)</option>
+                        <option value="1e3">K (Thousand)</option>
+                        <option value="1e6" selected>M (Million)</option>
+                        <option value="1e9">B (Billion)</option>
+                        <option value="1e12">T (Trillion)</option>
+                        <option value="1e15">Qa (Quadrillion)</option>
+                        <option value="1e18">Qi (Quintillion)</option>
+                        <option value="1e21">Sx (Sextillion)</option>
+                    </select>
+                </div>
+
+                <!-- Current Savings / Balance Input -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Modal / Koin Saat Ini</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="currentSavings" value="0" step="any" min="0" oninput="calculateAll()" 
+                            class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-lg font-bold text-white focus:outline-none focus:border-purple-500 transition" placeholder="0">
+                        <select id="savingsSuffixSelector" onchange="calculateAll()" 
+                            class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-xs font-semibold text-slate-300 focus:outline-none focus:border-purple-500 transition">
+                            <option value="1">-</option>
+                            <option value="1e3">K</option>
+                            <option value="1e6">M</option>
+                            <option value="1e9">B</option>
+                            <option value="1e12">T</option>
+                            <option value="1e15">Qa</option>
+                            <option value="1e18">Qi</option>
+                            <option value="1e21">Sx</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Goal Output Stats & Progress Bar -->
+            <div class="bg-slate-950/60 rounded-2xl p-6 border border-slate-800 space-y-6">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
+                    <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Total Harga Pickaxe</span>
+                        <span id="goalTargetDisplay" class="text-xl font-extrabold text-purple-300">0</span>
+                    </div>
+                    <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Kekurangan Koin (Sisa)</span>
+                        <span id="goalRemainingDisplay" class="text-xl font-extrabold text-pink-400">0</span>
+                    </div>
+                    <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Estimasi Waktu Dicapai</span>
+                        <span id="goalTimeDisplay" class="text-xl font-extrabold text-cyan-300">0 Detik</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-slate-400">Progress Tabungan Menuju Pickaxe</span>
+                        <span id="goalPercentage" class="font-bold text-purple-400">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-800">
+                        <div id="goalProgressBar" class="bg-gradient-to-r from-purple-500 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Milestone Badges -->
+                <div class="pt-2">
+                    <span class="text-xs font-semibold text-slate-400 block mb-2.5">Milestones Perjalanan:</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <div id="milestone25" class="p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-500 flex items-center justify-between">
+                            <span>25% Target</span>
+                            <i class="fa-regular fa-circle"></i>
+                        </div>
+                        <div id="milestone50" class="p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-500 flex items-center justify-between">
+                            <span>50% Target</span>
+                            <i class="fa-regular fa-circle"></i>
+                        </div>
+                        <div id="milestone75" class="p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-500 flex items-center justify-between">
+                            <span>75% Target</span>
+                            <i class="fa-regular fa-circle"></i>
+                        </div>
+                        <div id="milestone100" class="p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-500 flex items-center justify-between">
+                            <span>100% Tercapai!</span>
+                            <i class="fa-regular fa-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-auto bg-slate-950/40">
+        <p>Roblox Break Steal & Egg Income & Pickaxe Calculator &bull; Dukungan Suffix Lengkap K sampai SX</p>
+    </footer>
+
+    <!-- JavaScript Calculation Engine -->
+    <script>
+        // Roblox standard notation suffixes up to Sextillion and beyond
+        const SUFFIXES = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
+
+        // Format raw numbers into Roblox readable short form (e.g. 1.55 M, 10.20 Sx)
+        function formatRobloxNumber(num) {
+            if (num === 0 || isNaN(num)) return "0";
+            if (num < 0.0001) return num.toExponential(2);
+            if (num < 1000) return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+            let tier = Math.floor(Math.log10(Math.abs(num)) / 3);
+            if (tier >= SUFFIXES.length) tier = SUFFIXES.length - 1;
+
+            let scale = Math.pow(10, tier * 3);
+            let scaled = num / scale;
+
+            return scaled.toFixed(2) + " " + SUFFIXES[tier];
+        }
+
+        // Set Suffix for Income per second
+        function setSuffix(value) {
+            document.getElementById('suffixSelector').value = value;
+            calculateAll();
+        }
+
+        // Set Pickaxe Tier quickly from presets
+        function setPickaxeTier(base, suffixVal, label) {
+            document.getElementById('targetBaseValue').value = base;
+            document.getElementById('targetSuffixSelector').value = suffixVal;
+            calculateAll();
+        }
+
+        // Set Multiplier buttons
+        function setMultiplier(val) {
+            document.getElementById('multiplierSlider').value = val;
+            document.getElementById('multiplierInput').value = val;
+            document.getElementById('multDisplay').textContent = val + 'x';
+            calculateAll();
+        }
+
+        // Sync slider and input for Multiplier
+        function updateMultiplierFromSlider() {
+            let val = document.getElementById('multiplierSlider').value;
+            document.getElementById('multiplierInput').value = val;
+            document.getElementById('multDisplay').textContent = val + 'x';
+            calculateAll();
+        }
+
+        function updateMultiplierFromInput() {
+            let val = parseFloat(document.getElementById('multiplierInput').value) || 1;
+            if (val < 1) val = 1;
+            document.getElementById('multiplierSlider').value = val;
+            document.getElementById('multDisplay').textContent = val + 'x';
+            calculateAll();
+        }
+
+        // Format seconds into readable duration string
+        function formatDuration(totalSeconds) {
+            if (totalSeconds <= 0) return "Tercapai! (0 detik)";
+            if (!isFinite(totalSeconds)) return "Waktu tak terhingga";
+
+            let days = Math.floor(totalSeconds / 86400);
+            let hours = Math.floor((totalSeconds % 86400) / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = Math.floor(totalSeconds % 60);
+
+            let parts = [];
+            if (days > 0) parts.push(`${days} hari`);
+            if (hours > 0 || days > 0) parts.push(`${hours} jam`);
+            if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes} mnt`);
+            parts.push(`${seconds} dtk`);
+
+            return parts.join(' ');
+        }
+
+        // Main Calculation Engine
+        function calculateAll() {
+            // 1. Income calculation per second
+            let baseVal = parseFloat(document.getElementById('baseValue').value) || 0;
+            let suffixMultiplier = parseFloat(document.getElementById('suffixSelector').value) || 1;
+            let gameMultiplier = parseFloat(document.getElementById('multiplierInput').value) || 1;
+
+            let rawPerSecond = baseVal * suffixMultiplier;
+            let effectivePerSec = rawPerSecond * gameMultiplier;
+
+            // Timeframes
+            let perMinute = effectivePerSec * 60;
+            let perHour = effectivePerSec * 3600;
+            let perDay = effectivePerSec * 86400;
+            let perWeek = effectivePerSec * 604800;
+            let perMonth = effectivePerSec * 2592000; // 30 days
+            let perYear = effectivePerSec * 31536000; // 365 days
+
+            // Update Income UI
+            updateField('effectivePerSec', effectivePerSec);
+            updateField('resMinute', perMinute);
+            updateField('resHour', perHour);
+            updateField('resDay', perDay);
+            updateField('resWeek', perWeek);
+            updateField('resMonth', perMonth);
+            updateField('resYear', perYear);
+
+            // 2. Pickaxe Target Goal Calculation (K to SX Support)
+            let targetBase = parseFloat(document.getElementById('targetBaseValue').value) || 0;
+            let targetMult = parseFloat(document.getElementById('targetSuffixSelector').value) || 1;
+            let targetTotal = targetBase * targetMult;
+
+            let savingsBase = parseFloat(document.getElementById('currentSavings').value) || 0;
+            let savingsMult = parseFloat(document.getElementById('savingsSuffixSelector').value) || 1;
+            let currentTotal = savingsBase * savingsMult;
+
+            let remaining = targetTotal - currentTotal;
+            if (remaining < 0) remaining = 0;
+
+            let secondsNeeded = (effectivePerSec > 0) ? (remaining / effectivePerSec) : 0;
+
+            // Update Goal UI
+            document.getElementById('goalTargetDisplay').textContent = formatRobloxNumber(targetTotal);
+            document.getElementById('goalRemainingDisplay').textContent = formatRobloxNumber(remaining);
+            document.getElementById('goalTimeDisplay').textContent = formatDuration(secondsNeeded);
+
+            // Progress percentage calculation
+            let percentage = 100;
+            if (targetTotal > 0) {
+                percentage = (currentTotal / targetTotal) * 100;
+                if (percentage > 100) percentage = 100;
+                if (percentage < 0) percentage = 0;
+            }
+
+            document.getElementById('goalPercentage').textContent = percentage.toFixed(1) + '%';
+            document.getElementById('goalProgressBar').style.width = percentage + '%';
+
+            // Milestones updates
+            updateMilestoneStatus('milestone25', percentage >= 25);
+            updateMilestoneStatus('milestone50', percentage >= 50);
+            updateMilestoneStatus('milestone75', percentage >= 75);
+            updateMilestoneStatus('milestone100', percentage >= 100);
+        }
+
+        function updateMilestoneStatus(elementId, isReached) {
+            let el = document.getElementById(elementId);
+            if (!el) return;
+            let icon = el.querySelector('i');
+            if (isReached) {
+                el.className = "p-2.5 rounded-xl bg-purple-950/60 border border-purple-500/50 text-purple-300 flex items-center justify-between font-semibold shadow-sm";
+                icon.className = "fa-solid fa-circle-check text-purple-400";
+            } else {
+                el.className = "p-2.5 rounded-xl bg-slate-900/40 border border-slate-800 text-slate-500 flex items-center justify-between";
+                icon.className = "fa-regular fa-circle";
+            }
+        }
+
+        function updateField(elementId, value) {
+            let el = document.getElementById(elementId);
+            if (el) {
+                el.textContent = formatRobloxNumber(value);
+                el.setAttribute('title', value.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            }
+        }
+
+        // Reset Calculator
+        function resetCalculator() {
+            document.getElementById('baseValue').value = '1.5';
+            document.getElementById('suffixSelector').value = '1e3';
+            setMultiplier(2);
+            document.getElementById('targetBaseValue').value = '50';
+            document.getElementById('targetSuffixSelector').value = '1e6';
+            document.getElementById('currentSavings').value = '0';
+            document.getElementById('savingsSuffixSelector').value = '1';
+            calculateAll();
+        }
+
+        // Initial run on load
+        window.onload = function() {
+            calculateAll();
+        };
+    </script>
+</body>
+</html>
+```
